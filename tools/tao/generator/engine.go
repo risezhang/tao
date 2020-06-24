@@ -401,20 +401,16 @@ func (e Engine) GenerateService(useDefault bool) error {
 }
 
 // TODO: proto support more than one model messages,  how to generate repo code then?
-func (e Engine) GenerateRepo() error {
-	if e.Workspace.CurrentResource == "" {
-		return errors.New("this command should be execute in resource dir")
-	}
-	_ = os.MkdirAll("svc", 0755)
-
+func (e Engine) GenerateRepo(protoFileName string) error {
 	files := []string{"repo", "repo.mysql", "repo.redis"}
+	fileBase := filepath.Base(protoFileName)
 	for _, file := range files {
-		outputFile, err := os.Create(fmt.Sprintf("svc/%s.go", file))
+		outputFile, err := os.Create(fmt.Sprintf("%s_%s.go", fileBase, file))
 		if err != nil {
 			return err
 		}
 
-		proto, err := parser.ParseProto3(e.Workspace.CurrentResource + ".proto")
+		proto, err := parser.ParseProto3(protoFileName)
 		if err != nil {
 			return err
 		}
@@ -425,7 +421,7 @@ func (e Engine) GenerateRepo() error {
 		}
 		model.Module = e.Workspace.Module
 
-		tplFile := filepath.Join(e.Workspace.TemplateDir, fmt.Sprintf("svc/%s.go.tpl", file))
+		tplFile := filepath.Join(e.Workspace.TemplateDir, fmt.Sprintf("repo/%s.go.tpl", file))
 		tpl, err := template.New(filepath.Base(tplFile)).Funcs(sprig.TxtFuncMap()).ParseFiles(tplFile)
 		if err != nil {
 			return err

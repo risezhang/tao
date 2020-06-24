@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/miraclew/tao/tools/tao/generator"
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/miraclew/tao/tools/tao/generator"
 
 	"github.com/urfave/cli/v2"
 )
@@ -89,7 +90,8 @@ func main() {
 			Aliases: []string{"r"},
 			Usage:   "创建Repo文件",
 			Action: func(context *cli.Context) error {
-				return e.GenerateRepo()
+				var file = context.Args().First()
+				return e.GenerateRepo(file)
 			},
 			SkipFlagParsing: true,
 		},
